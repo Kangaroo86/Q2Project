@@ -64,11 +64,15 @@ export default function ToolbarComponent({ messages, selectedMessageCount }) {
         </button>
       </div>
 
-      <div>
+      {/* <div>
         {messages.map(element =>
-          <MessageComponent message={element} selected={selectedMessageCount} />
+          <MessageComponent
+            message={element}
+            selected={selectedMessageCount}
+            debug={'toolbar'}
+          />
         )}
-      </div>
+      </div> */}
     </div>
   );
   //

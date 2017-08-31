@@ -8,6 +8,58 @@ import ComposeFormComponent from './component/ComposeFormComponent.js';
 import MessageComponent from './component/MessageComponent.js';
 import InboxPage from './component/InboxPage.js';
 
+let selected = function() {};
+let message = function() {};
+let onMarkAsReadMessage = function() {};
+
+//THIS IS FOR CHECK
+let onSelectMessage = function(itemId) {
+  let matchedObject = seedData.find(function(message) {
+    return message.id === itemId;
+  });
+
+  if (matchedObject !== undefined) {
+    matchedObject.selected = true;
+  }
+  render();
+};
+let onDeselectMessage = function(itemId) {
+  let matchedObject = seedData.find(function(message) {
+    return message.id === itemId;
+  });
+
+  if (matchedObject !== undefined) {
+    matchedObject.selected = false;
+  }
+  render();
+};
+
+//THIS IS FOR STAR
+//loop through an array checking for conditional, set star to
+let onStarMessage = function(itemId) {
+  let matchedObject = seedData.find(function(message) {
+    return message.id === itemId;
+  });
+
+  if (matchedObject !== undefined) {
+    matchedObject.starred = true;
+  }
+  render();
+};
+
+let onUnstarMessage = function(itemId) {
+  console.log('unstared entered the function');
+  let matchedObject = seedData.find(function(message) {
+    return message.id === itemId;
+  });
+  console.log('unstared matchedobj', matchedObject);
+  if (matchedObject !== undefined) {
+    matchedObject.starred = false;
+    console.log('unstared entered the if');
+  }
+  render();
+};
+
 const seedData = [
   {
     id: 1,
@@ -76,12 +128,19 @@ const seedData = [
 
 let inputMesseges = [];
 
-ReactDOM.render(
-  <InboxPage
-    messages={seedData}
-    selectedMessageIds={inputMesseges}
-    showComposeForm={ComposeFormComponent}
-  />,
-  document.getElementById('root')
-);
-registerServiceWorker();
+function render() {
+  ReactDOM.render(
+    <InboxPage
+      messages={seedData}
+      selectedMessageIds={inputMesseges}
+      showComposeForm={ComposeFormComponent}
+      onStarMessage={onStarMessage}
+      onUnstarMessage={onUnstarMessage}
+      onSelectMessage={onSelectMessage}
+      onDeselectMessage={onDeselectMessage}
+    />,
+    document.getElementById('root')
+  );
+}
+render();
+//registerServiceWorker();

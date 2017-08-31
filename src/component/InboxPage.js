@@ -8,7 +8,11 @@ import ToolbarComponent from './ToolbarComponent.js';
 export default function InboxPage({
   messages,
   selectedMessageIds,
-  showComposeForm
+  showComposeForm,
+  onStarMessage,
+  onUnstarMessage,
+  onSelectMessage,
+  onDeselectMessage
 }) {
   return (
     <InboxPageLayout>
@@ -19,6 +23,10 @@ export default function InboxPage({
       <MessagesComponent
         messages={messages}
         selectedMessageIds={selectedMessageIds}
+        onStarMessage={onStarMessage}
+        onUnstarMessage={onUnstarMessage}
+        onSelectMessage={onSelectMessage}
+        onDeselectMessage={onDeselectMessage}
       />
       {showComposeForm && <ComposeFormComponent />}
     </InboxPageLayout>
