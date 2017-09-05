@@ -36,13 +36,15 @@ let onRemoveLabelSelectedMessages = function(label) {
 
 //DELETE MESSAGES
 let onDeleteSelectedMessages = function() {
-  seedData.forEach(element => {
-    if (element.selected == true) {
+  const copySeedData = seedData.slice(0);
+  copySeedData.forEach(element => {
+    if (element.selected === true) {
       let objId = element.id;
-      let index = seedData.indexOf(objId);
+      let index = seedData.findIndex(message => message.id === objId);
       seedData.splice(index, 1);
     }
   });
+  render();
 };
 
 //MARK ALL READ
@@ -78,16 +80,16 @@ let onOpenComposeForm = function() {
 
 //CLOSE COMPOSE FORM
 let handleClickCancel = function() {
-  //console.log('clicked');
   showComposeForm = false;
   render();
 };
 
 //SEND MESSAGE
-let handle_onSubmit = function({ subject, body }) {
+let handle_onSubmit = function(event) {
+  console.log(event.subject.value);
   let newObj = {
     id: 9,
-    subject: subject,
+    subject: event.subject.value,
     read: false,
     starred: true,
     labels: ['dev']

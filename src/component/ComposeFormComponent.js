@@ -11,9 +11,9 @@ export default function ComposeFormComponent({
   };
 
   let onSubmit = function(event) {
-    console.log('clicked', event.target);
+    console.log('clicked', event.target.subject.value);
     event.preventDefault();
-    handle_onSubmit(event.target.value);
+    handle_onSubmit(event.target);
   };
 
   return (
@@ -47,11 +47,9 @@ export default function ComposeFormComponent({
       </div>
       <div className="form-group">
         <div className="col-sm-8 col-sm-offset-2">
-          <button
-            type="submit"
-            // value="Send"
-            className="btn btn-primary"
-          />
+          <button type="submit" value="Send" className="btn btn-primary">
+            Submit
+          </button>
         </div>
         <input
           type="reset"
