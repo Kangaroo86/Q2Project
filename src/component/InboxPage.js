@@ -25,13 +25,7 @@ export default function InboxPage({
   onDeleteSelectedMessages,
   handleClickCancel,
   handle_onSubmit
-  //notMarkAsReadMessage
 }) {
-  // let composeForm = undefined;
-  // if (showComposeForm === true) {
-  //   composeForm = ComposeFormComponent;
-  // }
-
   return (
     <InboxPageLayout>
       <ToolbarComponent
@@ -46,7 +40,6 @@ export default function InboxPage({
         onApplyLabelSelectedMessages={onApplyLabelSelectedMessages}
         onRemoveLabelSelectedMessages={onRemoveLabelSelectedMessages}
         onDeleteSelectedMessages={onDeleteSelectedMessages}
-        //ComposeFormComponent={ComposeFormComponent}
       />
       <MessagesComponent
         messages={messages}
@@ -56,7 +49,6 @@ export default function InboxPage({
         onSelectMessage={onSelectMessage}
         onDeselectMessage={onDeselectMessage}
         onMarkAsReadMessage={onMarkAsReadMessage}
-        //notMarkAsReadMessage={notMarkAsReadMessage}
       />
       {showComposeForm &&
         <ComposeFormComponent

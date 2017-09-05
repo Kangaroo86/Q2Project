@@ -1,5 +1,4 @@
 import React from 'react';
-//import MessageComponent from './MessageComponent.js';
 var classNames = require('classnames');
 
 export default function ToolbarComponent({
@@ -16,39 +15,6 @@ export default function ToolbarComponent({
 }) {
   let classes;
   let select_allMessage;
-
-  //console.log('selectedMessageCount ---------', selectedMessageCount);
-  // if (messages.selected === true) {
-  //   select_allMessage = classNames({
-  //     fa: true,
-  //     'fa-check-square-o': true
-  //   });
-  // }
-
-  //---------------------------------------------------
-  // if (messages.length === selectedMessageCount) {
-  //   classes = classNames({
-  //     fa: true,
-  //     'fa-check-square-o': true
-  //   });
-  // } else if (selectedMessageCount >= 1) {
-  //   classes = classNames({
-  //     fa: true,
-  //     'fa-minus-square-o': true
-  //   });
-  // } else if (selectedMessageCount == 0) {
-  //   classes = classNames({
-  //     fa: true,
-  //     'fa-check-square-o': true,
-  //     btn: true,
-  //     'btn-default': false
-  //   });
-  // } else {
-  //   classes = classNames({
-  //     fa: true,
-  //     'fa-check-square-o': true
-  //   });
-  // }
 
   //COMPOSE BUTTON
   function handle_onOpenComposeForm(event) {

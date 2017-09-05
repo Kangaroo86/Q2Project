@@ -4,7 +4,6 @@ import './index.css';
 import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 import './index.css';
-//import ComposeFormComponent from './component/ComposeFormComponent.js';
 import MessageComponent from './component/MessageComponent.js';
 import InboxPage from './component/InboxPage.js';
 
@@ -16,7 +15,6 @@ let onApplyLabelSelectedMessages = function(label) {
   seedData.forEach(element => {
     if (element.selected === true) {
       element.labels.push(label);
-      //console.log(element, '<<<<<');
     }
   });
   render();
@@ -28,7 +26,6 @@ let onRemoveLabelSelectedMessages = function(label) {
     if (element.selected === true) {
       let index = element.labels.indexOf(label);
       element.labels.splice(index, 1);
-      //console.log(test, '--------');
     }
   });
   render();
