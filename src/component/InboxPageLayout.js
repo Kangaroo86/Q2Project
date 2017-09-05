@@ -1,9 +1,11 @@
 import React from 'react';
 
 export default function InboxPageLayout(props) {
+  console.log('what is props', props);
+
   return (
     <div className="container">
-      <div class="row">
+      <div className="row">
         <div className="col m8 s12">
           {props.children[0]}
         </div>

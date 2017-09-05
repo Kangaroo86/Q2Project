@@ -12,13 +12,41 @@ export default function InboxPage({
   onStarMessage,
   onUnstarMessage,
   onSelectMessage,
-  onDeselectMessage
+  onDeselectMessage,
+  onMarkAsReadMessage,
+  onOpenComposeForm,
+  onSelectAllMessages,
+  onDeselectAllMessages,
+  selectedMessageCount,
+  onMarkAsReadSelectedMessages,
+  onMarkAsUnreadSelectedMessages,
+  onApplyLabelSelectedMessages,
+  onRemoveLabelSelectedMessages,
+  onDeleteSelectedMessages,
+  handleClickCancel,
+  handle_onSubmit
+  //notMarkAsReadMessage
 }) {
+  // let composeForm = undefined;
+  // if (showComposeForm === true) {
+  //   composeForm = ComposeFormComponent;
+  // }
+
   return (
     <InboxPageLayout>
       <ToolbarComponent
         messages={messages}
         selectedMessageCount={selectedMessageIds.length}
+        onOpenComposeForm={onOpenComposeForm}
+        onSelectAllMessages={onSelectAllMessages}
+        onDeselectAllMessages={onDeselectAllMessages}
+        selectedMessageIds={selectedMessageIds}
+        onMarkAsReadSelectedMessages={onMarkAsReadSelectedMessages}
+        onMarkAsUnreadSelectedMessages={onMarkAsUnreadSelectedMessages}
+        onApplyLabelSelectedMessages={onApplyLabelSelectedMessages}
+        onRemoveLabelSelectedMessages={onRemoveLabelSelectedMessages}
+        onDeleteSelectedMessages={onDeleteSelectedMessages}
+        //ComposeFormComponent={ComposeFormComponent}
       />
       <MessagesComponent
         messages={messages}
@@ -27,8 +55,14 @@ export default function InboxPage({
         onUnstarMessage={onUnstarMessage}
         onSelectMessage={onSelectMessage}
         onDeselectMessage={onDeselectMessage}
+        onMarkAsReadMessage={onMarkAsReadMessage}
+        //notMarkAsReadMessage={notMarkAsReadMessage}
       />
-      {showComposeForm && <ComposeFormComponent />}
+      {showComposeForm &&
+        <ComposeFormComponent
+          handleClickCancel={handleClickCancel}
+          handle_onSubmit={handle_onSubmit}
+        />}
     </InboxPageLayout>
   );
 }

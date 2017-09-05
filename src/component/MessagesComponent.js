@@ -7,7 +7,9 @@ export default function MessagesComponent({
   onStarMessage,
   onUnstarMessage,
   onSelectMessage,
-  onDeselectMessage
+  onDeselectMessage,
+  onMarkAsReadMessage
+  //notMarkAsReadMessage
 }) {
   //console.log(selectedMessageIds);
   return (
@@ -15,6 +17,7 @@ export default function MessagesComponent({
       {/* {console.log('this is messages props', messages)} */}
       {messages.map(element =>
         <MessageComponent
+          key={element.id}
           message={element}
           //selected={selectedMessageIds.indexOf(element.id) > -1 ? true : false}
           selected={element.selected ? element.selected : false}
@@ -22,6 +25,8 @@ export default function MessagesComponent({
           onUnstarMessage={onUnstarMessage}
           onSelectMessage={onSelectMessage}
           onDeselectMessage={onDeselectMessage}
+          onMarkAsReadMessage={onMarkAsReadMessage}
+          //notMarkAsReadMessage={notMarkAsReadMessage}
         />
       )}
     </div>

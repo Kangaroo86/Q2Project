@@ -1,8 +1,23 @@
 import React from 'react';
 
-export default function ComposeFormComponent({ props }) {
+export default function ComposeFormComponent({
+  handleClickCancel,
+  handle_onSubmit
+}) {
+  let handle_ClickCancel = function(event) {
+    event.preventDefault();
+    handleClickCancel();
+    //
+  };
+
+  let onSubmit = function(event) {
+    console.log('clicked', event.target);
+    event.preventDefault();
+    handle_onSubmit(event.target.value);
+  };
+
   return (
-    <form className="form-horizontal well">
+    <form className="form-horizontal well" onSubmit={onSubmit}>
       <div className="form-group">
         <div className="col-sm-8 col-sm-offset-2">
           <h4>Compose Message</h4>
@@ -32,8 +47,18 @@ export default function ComposeFormComponent({ props }) {
       </div>
       <div className="form-group">
         <div className="col-sm-8 col-sm-offset-2">
-          <input type="submit" value="Send" className="btn btn-primary" />
+          <button
+            type="submit"
+            // value="Send"
+            className="btn btn-primary"
+          />
         </div>
+        <input
+          type="reset"
+          value="Cancel"
+          className="btn btn-default"
+          onClick={handle_ClickCancel}
+        />
       </div>
     </form>
   );
