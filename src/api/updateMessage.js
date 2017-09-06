@@ -1,0 +1,31 @@
+export default function updateMessage(messageId, changes) {
+  return fetch(
+    'https://api.airtable.com/v0/app9W2SSELvaPePpI/messages/' + messageId,
+    {
+      method: 'PATCH',
+      headers: {
+        Authorization: 'Bearer keyrIMJRMlgyfWv0r',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        fields: changes
+      })
+    }
+  )
+    .then(response => response.json())
+    .then(record => {
+      return {
+        id: record.id,
+        body: record.fields.body,
+        subject: record.fields.subject,
+        read: record.fields.read,
+        starred: record.fields.starred,
+        selected: record.fields.selected,
+        labels: record.fields.labels ? record.fields.labels.split(',') : ''
+      };
+    })
+    .then(message => {
+      return message;
+      //console.log(message);
+    });
+}

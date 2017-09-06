@@ -123,11 +123,13 @@ export default class MessageComponent extends Component {
           </div>
         </div>
         <div className="col-xs-11">
-          {this.props.message.labels.map(label =>
-            <span className="label label-warning">
-              {label}
-            </span>
-          )}
+          {/* {console.log(this.props.message.labels, '-----------')} */}
+          {this.props.message.labels &&
+            this.props.message.labels.map(label =>
+              <span className="label label-warning">
+                {label}
+              </span>
+            )}
           <a href="#" onClick={this.handleReadMessageClick}>
             {this.props.message.subject}
           </a>
