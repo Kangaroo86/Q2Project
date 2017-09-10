@@ -51,11 +51,13 @@ export default function ToolbarComponent({
     event.preventDefault();
     onApplyLabelSelectedMessages(event.target.value);
   }
+
   //REMOVE LABELS
   function handle_onRemoveLabelSelectedMessages(event) {
     event.preventDefault();
     onRemoveLabelSelectedMessages(event.target.value);
   }
+
   //DELETE MESSAGES
   function handle_onDeleteSelectedMessages(event) {
     event.preventDefault();
