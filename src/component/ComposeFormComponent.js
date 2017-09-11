@@ -1,12 +1,12 @@
 import React from 'react';
 
 export default function ComposeFormComponent({
-  handleClickCancel,
+  onComposeFormCancel,
   handle_onSubmit
 }) {
-  let handle_ClickCancel = function(event) {
+  let handle_onComposeFormCancel = function(event) {
     event.preventDefault();
-    handleClickCancel();
+    onComposeFormCancel();
     //
   };
 
@@ -55,7 +55,7 @@ export default function ComposeFormComponent({
           type="reset"
           value="Cancel"
           className="btn btn-default"
-          onClick={handle_ClickCancel}
+          onClick={handle_onComposeFormCancel}
         />
       </div>
     </form>

@@ -203,22 +203,23 @@ export default class App extends Component {
 
   //OPEN COMPOSE FORM
   onOpenComposeForm = () => {
-    //this.setState({ showComposeForm: true });
-    console.log('click');
-    //
+    this.setState(currentState => {
+      let copy = [...currentState.showComposeForm];
+      copy = true;
+      return { showComposeForm: copy };
+    });
+    console.log('click', this.state.showComposeForm);
   };
-  // //OPEN COMPOSE FORM
-  // let showComposeForm = false;
-  // let onOpenComposeForm = function() {
-  //   showComposeForm = true;
-  //   render();
-  // };
-  //
-  // //CLOSE COMPOSE FORM
-  // let handleClickCancel = function() {
-  //   showComposeForm = false;
-  //   render();
-  // };
+
+  //CLOSE COMPOSE FORM
+  onComposeFormCancel = () => {
+    this.setState(currentState => {
+      let copy = [...currentState.showComposeForm];
+      copy = false;
+      return { showComposeForm: copy };
+    });
+    console.log('click', this.state.showComposeForm);
+  };
 
   render() {
     return (
@@ -226,8 +227,8 @@ export default class App extends Component {
         messages={this.state.messages}
         selectedMessageIds={this.state.selectedMessageIds}
         selectedMessageCount={this.state.selectedMessageCount}
-        onOpenComposeForm={this.state.onOpenComposeForm} //
-        onToggleComposeForm={this._toggleComposeForm}
+        onOpenComposeForm={this.onOpenComposeForm} //
+        onToggleComposeForm={this.toggleComposeForm}
         onSelectAllMessages={this.onSelectAllMessages} //
         onDeselectAllMessages={this.onDeselectAllMessages}
         onMarkAsReadSelectedMessages={this.onMarkAsReadSelectedMessages} //done
@@ -241,7 +242,7 @@ export default class App extends Component {
         onStarMessage={this.onStarMessage} //done
         onUnstarMessage={this.onUnstarMessage} //done
         onComposeFormSubmit={this._composeFormSubmit}
-        onComposeFormCancel={this._composeFormCancel}
+        onComposeFormCancel={this.onComposeFormCancel}
       />
     );
   }

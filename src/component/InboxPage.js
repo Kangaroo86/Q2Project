@@ -23,7 +23,7 @@ export default function InboxPage({
   onApplyLabelSelectedMessages,
   onRemoveLabelSelectedMessages,
   onDeleteSelectedMessages,
-  handleClickCancel,
+  onComposeFormCancel,
   handle_onSubmit
 }) {
   return (
@@ -52,7 +52,7 @@ export default function InboxPage({
       />
       {showComposeForm &&
         <ComposeFormComponent
-          handleClickCancel={handleClickCancel}
+          onComposeFormCancel={onComposeFormCancel}
           handle_onSubmit={handle_onSubmit}
         />}
     </InboxPageLayout>
