@@ -7,6 +7,7 @@ export default class App extends Component {
   state = {
     messages: [],
     selectedMessageIds: [],
+    selectedMessageCount: 0,
     showComposeForm: false,
     showApiError: false
   };
@@ -130,18 +131,13 @@ export default class App extends Component {
     this.state.messages.forEach(element => {
       let item_id = element.id;
       let item_read = element.read;
-      console.log('element result: ----', element);
-      //console.log('item id result: ----', item_id);
-      //console.log('item read result: ----', item_read);
+      let selected = element.selected;
 
-      if (element.selected) {
-        console.log('boolean result:-----', element.selected);
-        return (item_read = false); //returning unedefined
-      }
-      //console.log('id ---', element.subject);
-      //console.log('item read :-----', item_read);
-      updateMessage(item_id, { read: item_read }).then(updatedMessage => {
-        //console.log('updated----', updatedMessage);
+      // if (element.selected) {
+      //   return (item_read = true); //returning unedefined
+      // }
+
+      updateMessage(item_id, { read: true }).then(updatedMessage => {
         this.setState(currentState => {
           let copy = [...currentState.messages];
           copy = copy.map(
@@ -149,29 +145,93 @@ export default class App extends Component {
           );
           return { messages: copy };
         });
-        // console.log(updatedMessage);
-        //
       });
     });
   };
-  //
 
-  // //MARK ALL READ
-  // let onMarkAsReadSelectedMessages = function() {
-  //   seedData.forEach(element => (element.read = true));
+  ////TOOLBAR_COMPONENT: MARK ALL UNREAD
+  onMarkAsUnreadSelectedMessages = () => {
+    this.state.messages.forEach(element => {
+      let item_id = element.id;
+      let item_read = element.read;
+      let selected = element.selected;
+
+      updateMessage(item_id, { read: false }).then(updatedMessage => {
+        this.setState(currentState => {
+          let copy = [...currentState.messages];
+          copy = copy.map(
+            element => (element.id === item_id ? updatedMessage : element)
+          );
+          return { messages: copy };
+        });
+      });
+    });
+  };
+
+  onSelectAllMessages = () => {
+    this.state.messages.forEach(element => {
+      let item_id = element.id;
+
+      updateMessage(item_id, { selected: true }).then(updatedMessage => {
+        this.setState(currentState => {
+          let copy = [...currentState.messages];
+          console.log('testss', this.state.selectedMessageCount);
+          copy = copy.map(
+            element => (element.id === item_id ? updatedMessage : element)
+          );
+          return { messages: copy, selectedMessageCount: 8 };
+        });
+      });
+    });
+  };
+
+  onDeselectAllMessages = () => {
+    this.state.messages.forEach(element => {
+      let item_id = element.id;
+
+      updateMessage(item_id, { selected: false }).then(updatedMessage => {
+        this.setState(currentState => {
+          let copy = [...currentState.messages];
+          copy = copy.map(
+            element => (element.id === item_id ? updatedMessage : element)
+          );
+          return { messages: copy, selectedMessageCount: 0 };
+        });
+      });
+    });
+  };
+
+  //OPEN COMPOSE FORM
+  onOpenComposeForm = () => {
+    //this.setState({ showComposeForm: true });
+    console.log('click');
+    //
+  };
+  // //OPEN COMPOSE FORM
+  // let showComposeForm = false;
+  // let onOpenComposeForm = function() {
+  //   showComposeForm = true;
   //   render();
   // };
+  //
+  // //CLOSE COMPOSE FORM
+  // let handleClickCancel = function() {
+  //   showComposeForm = false;
+  //   render();
+  // };
+
   render() {
     return (
       <InboxPage
         messages={this.state.messages}
         selectedMessageIds={this.state.selectedMessageIds}
-        showComposeForm={this.state.showComposeForm}
+        selectedMessageCount={this.state.selectedMessageCount}
+        onOpenComposeForm={this.state.onOpenComposeForm} //
         onToggleComposeForm={this._toggleComposeForm}
-        onSelectAllMessages={this._selectAllMessages}
-        onDeselectAllMessages={this._deselectAllMessages}
-        onMarkAsReadSelectedMessages={this.onMarkAsReadSelectedMessages} //
-        onMarkAsUnreadSelectedMessages={this._markAsUnreadSelectedMessages}
+        onSelectAllMessages={this.onSelectAllMessages} //
+        onDeselectAllMessages={this.onDeselectAllMessages}
+        onMarkAsReadSelectedMessages={this.onMarkAsReadSelectedMessages} //done
+        onMarkAsUnreadSelectedMessages={this.onMarkAsUnreadSelectedMessages} //done
         onApplyLabelSelectedMessages={this.onApplyLabelSelectedMessages} //done
         onRemoveLabelSelectedMessages={this.onRemoveLabelSelectedMessages} //done
         onDeleteSelectedMessages={this._deleteSelectedMessages}

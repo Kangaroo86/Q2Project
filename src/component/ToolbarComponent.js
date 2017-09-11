@@ -16,6 +16,20 @@ export default function ToolbarComponent({
   let classes;
   let select_allMessage;
 
+  let status = 'fa fa-square-o';
+
+  if (selectedMessageCount === messages.length) {
+    status = 'fa fa-check-square-o'; //all
+  } else if (selectedMessageCount !== 0) {
+    status = 'fa fa-minus-square-o'; // some
+  }
+
+  let disabled = '';
+
+  if (selectedMessageCount === 0) {
+    disabled = 'disabled';
+  }
+
   //COMPOSE BUTTON
   function handle_onOpenComposeForm(event) {
     event.preventDefault();
@@ -23,16 +37,28 @@ export default function ToolbarComponent({
   }
 
   //SELECT ALL MESSAGE BUTTON
+  // function handle_onSelectAllMessages(event) {
+  //   event.preventDefault();
+  //   onSelectAllMessages();
+  // }
+
   function handle_onSelectAllMessages(event) {
     event.preventDefault();
-    onSelectAllMessages();
+    //onSelectAllMessages();
+    if (selectedMessageCount === 0) {
+      //onDeselectAllMessages();
+      onSelectAllMessages();
+    } else {
+      onDeselectAllMessages();
+      //onSelectAllMessages();
+    }
   }
 
   //UNSELECT ALL MESSAGE BUTTON
-  function handle_onDeselectAllMessages(event) {
-    event.preventDefault();
-    onDeselectAllMessages();
-  }
+  // function handle_onDeselectAllMessages(event) {
+  //   event.preventDefault();
+  //   onDeselectAllMessages();
+  // }
 
   //MARK AS READ BUTTON
   function handle_onMarkAsReadSelectedMessages(event) {
@@ -79,8 +105,7 @@ export default function ToolbarComponent({
         <button
           className="btn btn-default"
           onClick={handle_onSelectAllMessages}>
-          {/* onClick={handle_onDeselectAllMessages}> */}
-          <i className="fa fa-check-square-o" />
+          <i className={status} />
         </button>
 
         <button
