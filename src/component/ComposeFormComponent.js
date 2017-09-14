@@ -2,7 +2,7 @@ import React from 'react';
 
 export default function ComposeFormComponent({
   onComposeFormCancel,
-  handle_onSubmit
+  onComposeFormSubmit
 }) {
   let handle_onComposeFormCancel = function(event) {
     event.preventDefault();
@@ -11,9 +11,12 @@ export default function ComposeFormComponent({
   };
 
   let onSubmit = function(event) {
-    console.log('clicked', event.target.subject.value);
     event.preventDefault();
-    handle_onSubmit(event.target);
+    let $target = event.target;
+    let subject = $target.subject.value;
+    let body = $target.body.value;
+
+    onComposeFormSubmit({ subject, body });
   };
 
   return (

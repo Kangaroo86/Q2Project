@@ -1,5 +1,5 @@
 import React from 'react';
-var classNames = require('classnames');
+//var classNames = require('classnames');
 
 export default function ToolbarComponent({
   messages,
@@ -13,9 +13,7 @@ export default function ToolbarComponent({
   onRemoveLabelSelectedMessages,
   onDeleteSelectedMessages
 }) {
-  let classes;
-  let select_allMessage;
-
+  //let classes;
   let status = 'fa fa-square-o';
 
   if (selectedMessageCount === messages.length) {
@@ -24,13 +22,13 @@ export default function ToolbarComponent({
     status = 'fa fa-minus-square-o'; // some
   }
 
-  let disabled = '';
+  // let disabled = '';
+  //
+  // if (selectedMessageCount === 0) {
+  //   disabled = 'disabled';
+  // }
 
-  if (selectedMessageCount === 0) {
-    disabled = 'disabled';
-  }
-
-  //COMPOSE BUTTON
+  //onOpenComposeForm
   function handle_onOpenComposeForm(event) {
     event.preventDefault();
     onOpenComposeForm();
@@ -43,14 +41,10 @@ export default function ToolbarComponent({
   // }
 
   function handle_onSelectAllMessages(event) {
-    event.preventDefault();
-    //onSelectAllMessages();
     if (selectedMessageCount === 0) {
-      //onDeselectAllMessages();
       onSelectAllMessages();
     } else {
       onDeselectAllMessages();
-      //onSelectAllMessages();
     }
   }
 

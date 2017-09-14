@@ -16,14 +16,21 @@ export default class MessageComponent extends Component {
 
   //CHECK MESSAGES CLICK
   handleCheckClick(event) {
-    //console.log(event, 'event---------');
-    if (this.props.message.selected) {
-      //console.log(this.props, 'this props------');
+    if (this.props.selected) {
       this.props.onDeselectMessage(this.props.message.id);
     } else {
       this.props.onSelectMessage(this.props.message.id);
     }
   }
+
+  // handleCheckClick(event) {
+  //   console.log('pass');
+  //   if (this.props.message.selected) {
+  //     this.props.onDeselectMessage(this.props.message.id);
+  //   } else {
+  //     this.props.onSelectMessage(this.props.message.id);
+  //   }
+  // }
 
   //STAR MESSAGES CLICK
   handleStarClick(event) {
@@ -85,14 +92,15 @@ export default class MessageComponent extends Component {
     }
 
     //FOR CHECK
-    if (this.props.message.selected === true) {
+    if (this.props.selected === true) {
+      ('do I fire?');
       check = 'checked';
     } else {
       check = '';
     }
 
     //FOR READ
-    if (this.props.message.read == true) {
+    if (this.props.message.read === true) {
       read = classNames({
         row: true,
         message: true,
@@ -125,14 +133,13 @@ export default class MessageComponent extends Component {
           </div>
         </div>
         <div className="col-xs-11">
-          {/* {console.log(this.props.message.labels, '-----------')} */}
           {this.props.message.labels &&
-            this.props.message.labels.map(label =>
-              <span className="label label-warning">
+            this.props.message.labels.map((label, i) =>
+              <span key={i} className="label label-warning">
                 {label}
               </span>
             )}
-          <a href="#" onClick={this.handleReadMessageClick}>
+          <a onClick={this.handleReadMessageClick}>
             {this.props.message.subject}
           </a>
         </div>

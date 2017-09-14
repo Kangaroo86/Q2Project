@@ -1,6 +1,5 @@
 import React from 'react';
 import ComposeFormComponent from './ComposeFormComponent.js';
-import MessageComponent from './MessageComponent.js';
 import MessagesComponent from './MessagesComponent.js'; //message id
 import InboxPageLayout from './InboxPageLayout.js';
 import ToolbarComponent from './ToolbarComponent.js';
@@ -24,7 +23,7 @@ export default function InboxPage({
   onRemoveLabelSelectedMessages,
   onDeleteSelectedMessages,
   onComposeFormCancel,
-  handle_onSubmit
+  onComposeFormSubmit
 }) {
   return (
     <InboxPageLayout>
@@ -42,19 +41,20 @@ export default function InboxPage({
         onDeleteSelectedMessages={onDeleteSelectedMessages}
       />
       <MessagesComponent
-        messages={messages}
         selectedMessageIds={selectedMessageIds}
-        onStarMessage={onStarMessage}
-        onUnstarMessage={onUnstarMessage}
+        messages={messages}
+        onMarkAsReadMessage={onMarkAsReadMessage}
         onSelectMessage={onSelectMessage}
         onDeselectMessage={onDeselectMessage}
-        onMarkAsReadMessage={onMarkAsReadMessage}
+        onStarMessage={onStarMessage}
+        onUnstarMessage={onUnstarMessage}
       />
-      {showComposeForm &&
-        <ComposeFormComponent
-          onComposeFormCancel={onComposeFormCancel}
-          handle_onSubmit={handle_onSubmit}
-        />}
+      {showComposeForm
+        ? <ComposeFormComponent
+            onComposeFormCancel={onComposeFormCancel}
+            onComposeFormSubmit={onComposeFormSubmit}
+          />
+        : undefined}
     </InboxPageLayout>
   );
 }

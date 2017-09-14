@@ -2,17 +2,19 @@ import React, { Component } from 'react';
 import InboxPage from './component/InboxPage';
 import getMessages from './api/getMessages.js';
 import updateMessage from './api/updateMessage.js';
+import createMessage from './api/createMessage.js';
+import deleteMessage from './api/deleteMessage.js';
 
 export default class App extends Component {
   state = {
     messages: [],
     selectedMessageIds: [],
-    selectedMessageCount: 0,
     showComposeForm: false,
+    selectedMessageCount: 0,
     showApiError: false
   };
 
-  ////FETCH JSON DATA
+  //***FETCH JSON DATA***//
   componentDidMount() {
     getMessages().then(data => {
       //this.setState({ messages: data });
@@ -21,11 +23,11 @@ export default class App extends Component {
     });
   }
 
-  ////MESSSAGE_COMPONENT: onSTAR_MESSAGE
+  //*MESSSAGE_COMPONENT: onStarMessage*//
   onStarMessage = itemId => {
     updateMessage(itemId, { starred: true }).then(updatedMessage => {
       this.setState(prevState => {
-        //let copy = prevState.messages.slice() //this is equivalent to spread operators
+        //let copy = prevState.messages.slice(0) //this is equivalent to spread operators
         let copy = [...prevState.messages];
         copy.find(item => item.id === itemId).starred = true;
         return { messages: copy };
@@ -33,7 +35,7 @@ export default class App extends Component {
     });
   };
 
-  ////MESSSAGE_COMPONENT: onUNSTAR_MESSAGE
+  //*MESSSAGE_COMPONENT: onUnstarMessage*//
   onUnstarMessage = itemId => {
     updateMessage(itemId, { starred: false }).then(updatedMessage => {
       this.setState(prevState => {
@@ -44,29 +46,27 @@ export default class App extends Component {
     });
   };
 
-  ////MESSSAGE_COMPONENT: CHECKBOX_SELECT_MESSAGE
-  onSelectMessage = itemId => {
-    updateMessage(itemId, { selected: true }).then(updatedMessage => {
-      this.setState(prevState => {
-        let copy = [...prevState.messages];
-        copy.find(item => item.id === itemId).selected = true;
-        return { messages: copy };
-      });
-    });
-  };
-
-  ////MESSSAGE_COMPONENT: CHECKBOX_UNSELECT_MESSAGE
+  //*MESSSAGE_COMPONENT: onDeselectMessage*//
   onDeselectMessage = itemId => {
-    updateMessage(itemId, { selected: false }).then(updatedMessage => {
-      this.setState(prevState => {
-        let copy = [...prevState.messages];
-        copy.find(item => item.id === itemId).selected = false;
-        return { messages: copy };
-      });
+    let found = this.state.selectedMessageIds.indexOf(itemId);
+    this.setState(currentState => {
+      const newSelectedMessageIds = currentState.selectedMessageIds;
+      newSelectedMessageIds.splice(found, 1);
+      return { selectedMessagesIds: newSelectedMessageIds };
     });
   };
 
-  ////MESSSAGE_COMPONENT: onMARK_AS_READMESSAGE
+  //*MESSAGES_COMPONENT: onSelectMessage*//
+  onSelectMessage = itemId => {
+    //console.log('itemId', itemId);
+    this.setState(prevState => {
+      const newSelectedMessageIds = [...prevState.selectedMessageIds];
+      newSelectedMessageIds.push(itemId);
+      return { selectedMessageIds: newSelectedMessageIds };
+    });
+  };
+
+  //*MESSSAGE_COMPONENT: onMarkAsReadMessage*//
   onMarkAsReadMessage = itemId => {
     updateMessage(itemId, { read: true }).then(updatedMessage => {
       this.setState(prevState => {
@@ -75,25 +75,41 @@ export default class App extends Component {
         return { messages: copy };
       });
     });
-    //
   };
 
-  ////TOOLBAR_COMPONENT: APPLY_LABELS
-  onApplyLabelSelectedMessages = label => {
-    this.state.messages.forEach(element => {
-      let item_Id = element.id;
-      let item_Label = [element.labels];
-      if (element.selected && !item_Label.includes(label)) {
-        item_Label.push(label);
-      }
+  //*MESSSAGE_COMPONENT: onMarkAsUnReadMessage*//
+  onMarkAsUnReadMessage = itemId => {
+    updateMessage(itemId, { read: false }).then(updatedMessage => {
+      this.setState(prevState => {
+        let copy = [...prevState.messages];
+        copy.find(item => item.id === itemId).read = false;
+        return { messages: copy };
+      });
+    });
+  };
 
-      updateMessage(item_Id, {
-        labels: item_Label.toString()
+  //*TOOLBAR_COMPONENT: onApplyLabelSelectedMessages*//
+  onApplyLabelSelectedMessages = label => {
+    let results = [];
+    this.state.selectedMessageIds.forEach(id => {
+      results.push(
+        this.state.messages.find(messageResults => {
+          return messageResults.id === id;
+        })
+      );
+    });
+
+    results.forEach(message => {
+      const newObj = message.labels.concat(label);
+      const message_id = message.id;
+
+      updateMessage(message_id, {
+        labels: newObj.toString()
       }).then(updatedMessage => {
         this.setState(currentState => {
           let copy = [...currentState.messages];
           copy = copy.map(
-            element => (element.id === item_Id ? updatedMessage : element)
+            element => (element.id === message_id ? updatedMessage : element)
           );
           return { messages: copy };
         });
@@ -101,19 +117,26 @@ export default class App extends Component {
     });
   };
 
-  ////TOOLBAR_COMPONENT: REMOVE LABELS
+  //*TOOLBAR_COMPONENT: onRemoveLabelSelectedMessages*//
   onRemoveLabelSelectedMessages = label => {
-    this.state.messages.forEach(element => {
-      let item_id = element.id;
-      let item_label = element.labels;
+    let result = [];
+    this.state.selectedMessageIds.forEach(id => {
+      result.push(
+        this.state.messages.find(messages => {
+          return messages.id === id;
+        })
+      );
 
-      if (element.selected && item_label.includes(label)) {
-        let label_index = item_label.indexOf(label);
-        item_label.splice(label_index, 1);
+      let item_labels = result[0].labels;
+      let item_id = result[0].id;
+
+      if (item_id && item_labels.includes(label)) {
+        let label_index = item_labels.indexOf(label);
+        item_labels.splice(label_index, 1);
       }
 
       updateMessage(item_id, {
-        labels: item_label.toString()
+        labels: item_labels.toString()
       }).then(updatedMessage => {
         this.setState(currentState => {
           let copy = [...currentState.messages];
@@ -126,169 +149,133 @@ export default class App extends Component {
     });
   };
 
-  ////TOOLBAR_COMPONENT: MARK ALL READ
+  ///alternative onRemoveLabelSelectedMessages
+  // this.setState(currentState => {
+  //   const newMessages = currentState.messages.map(message => {
+  //     if (message.id === this.state.selectedMessageIds) {
+  //       return message.labels;
+  //     } else {
+  //       return message;
+  //     }
+  //     //if message.id is in this.state.selectedMessageIds,
+  //     //then return a new message which is the same as message,
+  //     //just with label removed
+  //     //else return message
+  //   });
+  //   return { messages: newMessages };
+  // });
+
+  //*TOOLBAR_COMPONENT: onMarkAsReadSelectedMessages*//
   onMarkAsReadSelectedMessages = () => {
-    this.state.messages.forEach(element => {
-      let item_id = element.id;
-      let item_read = element.read;
-      let selected = element.selected;
-
-      // if (element.selected) {
-      //   return (item_read = true); //returning unedefined
-      // }
-
-      updateMessage(item_id, { read: true }).then(updatedMessage => {
-        this.setState(currentState => {
-          let copy = [...currentState.messages];
-          copy = copy.map(
-            element => (element.id === item_id ? updatedMessage : element)
-          );
-          return { messages: copy };
-        });
-      });
-    });
+    this.state.selectedMessageIds.forEach(id => this.onMarkAsReadMessage(id));
   };
 
-  ////TOOLBAR_COMPONENT: MARK ALL UNREAD
+  //*TOOLBAR_COMPONENT: onMarkAsUnreadSelectedMessages*//
   onMarkAsUnreadSelectedMessages = () => {
-    this.state.messages.forEach(element => {
-      let item_id = element.id;
-      let item_read = element.read;
-      let selected = element.selected;
-
-      updateMessage(item_id, { read: false }).then(updatedMessage => {
-        this.setState(currentState => {
-          let copy = [...currentState.messages];
-          copy = copy.map(
-            element => (element.id === item_id ? updatedMessage : element)
-          );
-          return { messages: copy };
-        });
-      });
-    });
+    this.state.selectedMessageIds.forEach(id => this.onMarkAsUnReadMessage(id));
   };
 
+  //*TOOLBAR_COMPONENT: onSelectAllMessages*//
   onSelectAllMessages = () => {
-    this.state.messages.forEach(element => {
-      let item_id = element.id;
-
-      updateMessage(item_id, { selected: true }).then(updatedMessage => {
-        this.setState(currentState => {
-          let copy = [...currentState.messages];
-          console.log('testss', this.state.selectedMessageCount);
-          copy = copy.map(
-            element => (element.id === item_id ? updatedMessage : element)
-          );
-          return { messages: copy, selectedMessageCount: 8 };
-        });
-      });
+    this.setState(prevState => {
+      let newArr = prevState.messages.map(message => message.id);
+      return {
+        selectedMessageIds: newArr,
+        selectedMessageCount: newArr.length
+      };
     });
   };
 
+  //*TOOLBAR_COMPONENT: onDeselectAllMessages*//
   onDeselectAllMessages = () => {
-    this.state.messages.forEach(element => {
-      let item_id = element.id;
-
-      updateMessage(item_id, { selected: false }).then(updatedMessage => {
-        this.setState(currentState => {
-          let copy = [...currentState.messages];
-          copy = copy.map(
-            element => (element.id === item_id ? updatedMessage : element)
-          );
-          return { messages: copy, selectedMessageCount: 0 };
-        });
-      });
+    this.setState({
+      selectedMessageIds: [],
+      selectedMessageCount: 0
     });
   };
 
-  //OPEN COMPOSE FORM
+  //*COMPOSE_FORM: onOpenComposeForm*//
   onOpenComposeForm = () => {
     this.setState(currentState => {
       let copy = [...currentState.showComposeForm];
       copy = true;
       return { showComposeForm: copy };
     });
-    console.log('click', this.state.showComposeForm);
   };
 
-  //CLOSE COMPOSE FORM
+  //*COMPOSE_FORM: onComposeFormCancel*//
   onComposeFormCancel = () => {
     this.setState(currentState => {
       let copy = [...currentState.showComposeForm];
       copy = false;
       return { showComposeForm: copy };
     });
-    console.log('click', this.state.showComposeForm);
+  };
+
+  //*TOOLBAR_COMPONENT: onDeleteSelectedMessages*//
+  onDeleteSelectedMessages = () => {
+    this.state.selectedMessageIds.forEach(message => {
+      let itemId = message;
+
+      deleteMessage(itemId).then(data => {
+        this.setState(prevState => {
+          prevState.messages.forEach((message, index) => {
+            if (message.id === data.id) {
+              prevState.messages.splice(index, 1);
+            }
+            return message;
+          });
+        });
+      });
+    });
+  };
+
+  //*ComposeForm: onComposeFormSubmit*//
+  onComposeFormSubmit = ({ subject, body }) => {
+    let newMessage = {
+      subject: subject,
+      body: body,
+      read: false,
+      starred: false,
+      labels: ''
+    };
+
+    return createMessage(newMessage).then(updatedMessage => {
+      this.setState(currentState => {
+        let newMessages = [...currentState.messages];
+        newMessages.unshift(updatedMessage);
+        return {
+          messages: newMessages,
+          showComposeForm: false
+        };
+      });
+    });
   };
 
   render() {
     return (
       <InboxPage
-        messages={this.state.messages}
+        messages={this.state.messages} //done
         selectedMessageIds={this.state.selectedMessageIds}
         selectedMessageCount={this.state.selectedMessageCount}
-        onOpenComposeForm={this.onOpenComposeForm} //
-        onToggleComposeForm={this.toggleComposeForm}
+        onToggleComposeForm={this.toggleComposeForm} //
         onSelectAllMessages={this.onSelectAllMessages} //
         onDeselectAllMessages={this.onDeselectAllMessages}
         onMarkAsReadSelectedMessages={this.onMarkAsReadSelectedMessages} //done
         onMarkAsUnreadSelectedMessages={this.onMarkAsUnreadSelectedMessages} //done
         onApplyLabelSelectedMessages={this.onApplyLabelSelectedMessages} //done
         onRemoveLabelSelectedMessages={this.onRemoveLabelSelectedMessages} //done
-        onDeleteSelectedMessages={this._deleteSelectedMessages}
+        onDeleteSelectedMessages={this.onDeleteSelectedMessages} //
         onMarkAsReadMessage={this.onMarkAsReadMessage} //done
         onSelectMessage={this.onSelectMessage} //done
         onDeselectMessage={this.onDeselectMessage} //done
         onStarMessage={this.onStarMessage} //done
         onUnstarMessage={this.onUnstarMessage} //done
-        onComposeFormSubmit={this._composeFormSubmit}
-        onComposeFormCancel={this.onComposeFormCancel}
+        onOpenComposeForm={this.onOpenComposeForm} //done
+        onComposeFormSubmit={this.onComposeFormSubmit}
+        onComposeFormCancel={this.onComposeFormCancel} //done
+        showComposeForm={this.state.showComposeForm} //done
       />
     );
   }
-  _toggleComposeForm = () => {
-    /* ... */
-  };
-  _selectAllMessages = () => {
-    /* ... */
-  };
-  _deselectAllMessages = () => {
-    /* ... */
-  };
-  _markAsReadSelectedMessages = () => {
-    /* ... */
-  };
-  _markAsUnreadSelectedMessages = () => {
-    /* ... */
-  };
-  _applyLabelSelectedMessages = label => {
-    /* ... */
-  };
-  _removeLabelSelectedMessages = labelToBeRemoved => {
-    /* ... */
-  };
-  _deleteSelectedMessages = () => {
-    /* ... */
-  };
-  _markAsReadMessage = messageId => {
-    /* ... */
-  };
-  _selectMessage = messageId => {
-    /* ... */
-  };
-  _deselectMessage = messageId => {
-    /* ... */
-  };
-  _starMessage = messageId => {
-    /* ... */
-  };
-  _unstarMessage = messageId => {
-    /* ... */
-  };
-  _composeFormSubmit = ({ subject, body }) => {
-    /* ... */
-  };
-  _composeFormCancel = () => {
-    /* ... */
-  };
 }
