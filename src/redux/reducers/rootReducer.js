@@ -51,15 +51,6 @@ export default function rootReducer(
         selectedMessageCount: 0
       };
 
-    // case 'MARK_ALL_UNREAD':
-    //   console.log('MARK_ALL_UNREAD');
-    //
-    //   return {
-    //     ...currentState,
-    //     selectedMessageIds: [],
-    //     selectedMessageCount: 0
-    //   };
-
     case 'COMPOSE':
       return { ...currentState, showComposeForm: action.showComposeForm };
 
