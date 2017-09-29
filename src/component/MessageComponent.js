@@ -25,7 +25,6 @@ export default class MessageComponent extends Component {
 
   //STAR MESSAGES CLICK
   handleStarClick(event) {
-    console.log('props---', this.props);
     event.preventDefault();
     if (this.props.message.starred) {
       this.props.onUnstarMessage(this.props.message.id);

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import InboxPage from './component/InboxPage';
-import getMessages from './api/getMessages.js';
-import updateMessage from './api/updateMessage.js';
-import createMessage from './api/createMessage.js';
-import deleteMessage from './api/deleteMessage.js';
+import createMessageProcess from './redux/thunks/createMessageProcess';
+import deleteMessageProcess from './redux/thunks/deleteMessageProcess';
+import getMessagesProcess from './redux/thunks/getMessagesProcess';
+import updateMessageProcess from './redux/thunks/updateMessageProcess';
 
 export default class App extends Component {
   constructor(props) {
@@ -23,36 +23,17 @@ export default class App extends Component {
 
   //***FETCH JSON DATA***//
   componentDidMount() {
-    getMessages().then(messages => {
-      this.props.store.dispatch({
-        type: 'GET_MESSAGES',
-        messages: messages,
-        selectedMessageCount: messages.filter(message => message.read !== true)
-          .length
-      });
-    });
+    this.props.store.dispatch(getMessagesProcess());
   }
 
   //*MESSSAGE_COMPONENT: onStarMessage*//
   onStarMessage = itemId => {
-    updateMessage(itemId, { starred: true }).then(updatedMessage => {
-      this.props.store.dispatch({
-        type: 'UPDATE_MESSAGE',
-        id: itemId,
-        message: updatedMessage
-      });
-    });
+    this.props.store.dispatch(updateMessageProcess(itemId, { starred: true }));
   };
 
   //*MESSSAGE_COMPONENT: onUnstarMessage*//
   onUnstarMessage = itemId => {
-    updateMessage(itemId, { starred: false }).then(updatedMessage => {
-      this.props.store.dispatch({
-        type: 'UPDATE_MESSAGE',
-        id: itemId,
-        message: updatedMessage
-      });
-    });
+    this.props.store.dispatch(updateMessageProcess(itemId, { starred: false }));
   };
 
   //*MESSSAGE_COMPONENT: onDeselectMessage*//
@@ -67,25 +48,12 @@ export default class App extends Component {
 
   //*MESSSAGE_COMPONENT: onMarkAsReadMessage*//
   onMarkAsReadMessage = itemId => {
-    updateMessage(itemId, { read: true }).then(updatedMessage => {
-      this.props.store.dispatch({
-        type: 'UPDATE_MESSAGE',
-        change: 'UPDATING',
-        id: itemId,
-        message: updatedMessage
-      });
-    });
+    this.props.store.dispatch(updateMessageProcess(itemId, { read: true }));
   };
 
   //*MESSSAGE_COMPONENT: onMarkAsUnReadMessage*//
   onMarkAsUnReadMessage = itemId => {
-    updateMessage(itemId, { read: false }).then(updatedMessage => {
-      this.props.store.dispatch({
-        type: 'UPDATE_MESSAGE',
-        id: itemId,
-        message: updatedMessage
-      });
-    });
+    this.props.store.dispatch(updateMessageProcess(itemId, { read: false }));
   };
 
   //*TOOLBAR_COMPONENT: onApplyLabelSelectedMessages*//
@@ -100,15 +68,10 @@ export default class App extends Component {
     newMessage.labels
       ? newMessage.labels.push(label)
       : (newMessage.labels = [label]);
-    updateMessage(itemId, {
-      labels: newMessage.labels.join(',')
-    }).then(message => {
-      this.props.store.dispatch({
-        type: 'UPDATE_MESSAGE',
-        id: itemId,
-        message: message
-      });
-    });
+
+    this.props.store.dispatch(
+      updateMessageProcess(itemId, { labels: newMessage.labels.join(',') })
+    );
   };
 
   //*TOOLBAR_COMPONENT: onRemoveLabelMessage*//
@@ -117,15 +80,9 @@ export default class App extends Component {
     if (newMessage.labels.includes(label)) {
       newMessage.labels.splice(newMessage.labels.indexOf(label), 1);
     }
-    updateMessage(itemId, {
-      labels: newMessage.labels.join(',')
-    }).then(message => {
-      this.props.store.dispatch({
-        type: 'UPDATE_MESSAGE',
-        id: itemId,
-        message: message
-      });
-    });
+    this.props.store.dispatch(
+      updateMessageProcess(itemId, { labels: newMessage.labels.join(',') })
+    );
   };
 
   onRemoveLabelSelectedMessages = label => {
@@ -175,9 +132,7 @@ export default class App extends Component {
 
   //*ComposeForm: onComposeFormSubmit*//
   onComposeFormSubmit = (subject, body) => {
-    createMessage(subject, body).then(message => {
-      this.props.store.dispatch({ type: 'CREATE_MESSAGE', message: message });
-    });
+    this.props.store.dispatch(createMessageProcess(subject, body));
   };
 
   //*TOOLBAR_COMPONENT: onDeleteSelectedMessages*//
@@ -186,9 +141,7 @@ export default class App extends Component {
   };
 
   onDeleteMessage = itemId => {
-    deleteMessage(itemId).then(() => {
-      this.props.store.dispatch({ type: 'DELETE_MESSAGE', id: itemId });
-    });
+    this.props.store.dispatch(deleteMessageProcess(itemId));
   };
 
   render() {

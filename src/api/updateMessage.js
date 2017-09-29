@@ -1,10 +1,10 @@
-export default function updateMessage(messageId, change) {
+export default function updateMessage(itemId, change) {
   return fetch(
-    `https://api.airtable.com/v0/app9W2SSELvaPePpI/messages/${messageId}`,
+    `https://api.airtable.com/v0/app9W2SSELvaPePpI/messages/${itemId}`,
     {
       method: 'PATCH',
       headers: {
-        Authorization: `Bearer keyrIMJRMlgyfWv0r`,
+        Authorization: 'Bearer keyrIMJRMlgyfWv0r',
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
@@ -14,6 +14,7 @@ export default function updateMessage(messageId, change) {
   )
     .then(response => response.json())
     .then(record => {
+      console.log('record', record);
       return {
         id: record.id,
         body: record.fields.body,

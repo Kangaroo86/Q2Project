@@ -1,5 +1,4 @@
 import React from 'react';
-//var classNames = require('classnames');
 
 export default function ToolbarComponent({
   messages,
@@ -60,8 +59,8 @@ export default function ToolbarComponent({
   }
 
   //DELETE MESSAGES
-  function handle_onDeleteSelectedMessages() {
-    console.log('toolbar');
+  function handle_onDeleteSelectedMessages(event) {
+    event.preventDefault();
     onDeleteSelectedMessages();
   }
 
