@@ -3,7 +3,6 @@ var classNames = require('classnames');
 
 export default class MessageComponent extends Component {
   constructor(props) {
-    //props have all of the shits pass in. this.props = props
     super(props); //purpose of super is calling 'constructor' method from 'Component'
 
     this.state = {
@@ -16,6 +15,7 @@ export default class MessageComponent extends Component {
 
   //CHECK MESSAGES CLICK
   handleCheckClick(event) {
+    //console.log('props---', this.props);
     if (this.props.selected) {
       this.props.onDeselectMessage(this.props.message.id);
     } else {
@@ -23,17 +23,9 @@ export default class MessageComponent extends Component {
     }
   }
 
-  // handleCheckClick(event) {
-  //   console.log('pass');
-  //   if (this.props.message.selected) {
-  //     this.props.onDeselectMessage(this.props.message.id);
-  //   } else {
-  //     this.props.onSelectMessage(this.props.message.id);
-  //   }
-  // }
-
   //STAR MESSAGES CLICK
   handleStarClick(event) {
+    console.log('props---', this.props);
     event.preventDefault();
     if (this.props.message.starred) {
       this.props.onUnstarMessage(this.props.message.id);
@@ -44,7 +36,7 @@ export default class MessageComponent extends Component {
 
   //READ MESSAGES CLICK
   handleReadMessageClick(event) {
-    event.preventDefault();
+    //console.log('this props', this.props);
     this.props.onMarkAsReadMessage(this.props.message.id);
   }
 
@@ -54,17 +46,7 @@ export default class MessageComponent extends Component {
     let check;
     let read;
 
-    //for label
-    // let classes = classNames({
-    //   row: true,
-    //   message: true,
-    //   selected: false,
-    //   unread: true
-    // });
-
-    //console.log('testing ----------', this.props.message.labels);
     if (this.props.message.labels.length !== 0) {
-      //this.props.message is from MessagesComponent//
       label = classNames({
         label: true,
         'label-warning': true

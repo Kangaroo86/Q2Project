@@ -1,33 +1,34 @@
 import React from 'react';
 
 export default function ComposeFormComponent({
-  onComposeFormCancel,
-  onComposeFormSubmit
+  onComposeFormSubmit,
+  onComposeFormCancel
 }) {
-  let handle_onComposeFormCancel = function(event) {
+  function handle_click_submit(event) {
+    event.preventDefault();
+    const $form = event.target;
+    const subject = $form.subject.value;
+    const body = $form.body.value;
+    onComposeFormSubmit(subject, body);
+  }
+
+  function handle_click_cancel(event) {
     event.preventDefault();
     onComposeFormCancel();
-    //
-  };
-
-  let onSubmit = function(event) {
-    event.preventDefault();
-    let $target = event.target;
-    let subject = $target.subject.value;
-    let body = $target.body.value;
-
-    onComposeFormSubmit({ subject, body });
-  };
+  }
 
   return (
-    <form className="form-horizontal well" onSubmit={onSubmit}>
+    <form
+      className="form-horizontal well"
+      onSubmit={handle_click_submit}
+      onReset={handle_click_cancel}>
       <div className="form-group">
         <div className="col-sm-8 col-sm-offset-2">
           <h4>Compose Message</h4>
         </div>
       </div>
       <div className="form-group">
-        <label for="subject" className="col-sm-2 control-label">
+        <label htmlFor="subject" className="col-sm-2 control-label">
           Subject
         </label>
         <div className="col-sm-8">
@@ -41,7 +42,7 @@ export default function ComposeFormComponent({
         </div>
       </div>
       <div className="form-group">
-        <label for="body" className="col-sm-2 control-label">
+        <label htmlFor="body" className="col-sm-2 control-label">
           Body
         </label>
         <div className="col-sm-8">
@@ -50,16 +51,9 @@ export default function ComposeFormComponent({
       </div>
       <div className="form-group">
         <div className="col-sm-8 col-sm-offset-2">
-          <button type="submit" value="Send" className="btn btn-primary">
-            Submit
-          </button>
+          <input type="submit" value="Send" className="btn btn-primary" />
+          <input type="reset" value="Cancel" className="btn btn-default" />
         </div>
-        <input
-          type="reset"
-          value="Cancel"
-          className="btn btn-default"
-          onClick={handle_onComposeFormCancel}
-        />
       </div>
     </form>
   );

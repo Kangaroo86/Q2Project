@@ -1,14 +1,14 @@
-export default function updateMessage(messageId, changes) {
+export default function updateMessage(messageId, change) {
   return fetch(
-    'https://api.airtable.com/v0/app9W2SSELvaPePpI/messages/' + messageId,
+    `https://api.airtable.com/v0/app9W2SSELvaPePpI/messages/${messageId}`,
     {
       method: 'PATCH',
       headers: {
-        Authorization: 'Bearer keyrIMJRMlgyfWv0r',
+        Authorization: `Bearer keyrIMJRMlgyfWv0r`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        fields: changes
+        fields: change
       })
     }
   )
@@ -23,9 +23,5 @@ export default function updateMessage(messageId, changes) {
         selected: record.fields.selected,
         labels: record.fields.labels ? record.fields.labels.split(',') : ''
       };
-    })
-    .then(message => {
-      return message;
-      //console.log(message);
     });
 }

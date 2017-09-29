@@ -6,31 +6,40 @@ import createMessage from './api/createMessage.js';
 import deleteMessage from './api/deleteMessage.js';
 
 export default class App extends Component {
-  state = {
-    messages: [],
-    selectedMessageIds: [],
-    showComposeForm: false,
-    selectedMessageCount: 0,
-    showApiError: false
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      messages: [],
+      selectedMessageIds: [],
+      showComposeForm: false,
+      selectedMessageCount: 0,
+      showApiError: false
+    };
+
+    this.props.store.subscribe(() => {
+      this.setState(this.props.store.getState());
+    });
+  }
 
   //***FETCH JSON DATA***//
   componentDidMount() {
-    getMessages().then(data => {
-      //this.setState({ messages: data });
-      this.setState({ messages: [...data] });
-      //console.log(this.state.messages, 'messages-------');
+    getMessages().then(messages => {
+      this.props.store.dispatch({
+        type: 'GET_MESSAGES',
+        messages: messages,
+        selectedMessageCount: messages.filter(message => message.read !== true)
+          .length
+      });
     });
   }
 
   //*MESSSAGE_COMPONENT: onStarMessage*//
   onStarMessage = itemId => {
     updateMessage(itemId, { starred: true }).then(updatedMessage => {
-      this.setState(prevState => {
-        //let copy = prevState.messages.slice(0) //this is equivalent to spread operators
-        let copy = [...prevState.messages];
-        copy.find(item => item.id === itemId).starred = true;
-        return { messages: copy };
+      this.props.store.dispatch({
+        type: 'UPDATE_MESSAGE',
+        id: itemId,
+        message: updatedMessage
       });
     });
   };
@@ -38,41 +47,32 @@ export default class App extends Component {
   //*MESSSAGE_COMPONENT: onUnstarMessage*//
   onUnstarMessage = itemId => {
     updateMessage(itemId, { starred: false }).then(updatedMessage => {
-      this.setState(prevState => {
-        let copy = [...prevState.messages];
-        copy.find(item => item.id === itemId).starred = false;
-        return { messages: copy };
+      this.props.store.dispatch({
+        type: 'UPDATE_MESSAGE',
+        id: itemId,
+        message: updatedMessage
       });
     });
   };
 
   //*MESSSAGE_COMPONENT: onDeselectMessage*//
   onDeselectMessage = itemId => {
-    let found = this.state.selectedMessageIds.indexOf(itemId);
-    this.setState(currentState => {
-      const newSelectedMessageIds = currentState.selectedMessageIds;
-      newSelectedMessageIds.splice(found, 1);
-      return { selectedMessagesIds: newSelectedMessageIds };
-    });
+    this.props.store.dispatch({ type: 'DESELECT_MESSAGE', id: itemId });
   };
 
   //*MESSAGES_COMPONENT: onSelectMessage*//
   onSelectMessage = itemId => {
-    //console.log('itemId', itemId);
-    this.setState(prevState => {
-      const newSelectedMessageIds = [...prevState.selectedMessageIds];
-      newSelectedMessageIds.push(itemId);
-      return { selectedMessageIds: newSelectedMessageIds };
-    });
+    this.props.store.dispatch({ type: 'SELECT_MESSAGE', id: itemId });
   };
 
   //*MESSSAGE_COMPONENT: onMarkAsReadMessage*//
   onMarkAsReadMessage = itemId => {
     updateMessage(itemId, { read: true }).then(updatedMessage => {
-      this.setState(prevState => {
-        let copy = [...prevState.messages];
-        copy.find(item => item.id === itemId).read = true;
-        return { messages: copy };
+      this.props.store.dispatch({
+        type: 'UPDATE_MESSAGE',
+        change: 'UPDATING',
+        id: itemId,
+        message: updatedMessage
       });
     });
   };
@@ -80,90 +80,59 @@ export default class App extends Component {
   //*MESSSAGE_COMPONENT: onMarkAsUnReadMessage*//
   onMarkAsUnReadMessage = itemId => {
     updateMessage(itemId, { read: false }).then(updatedMessage => {
-      this.setState(prevState => {
-        let copy = [...prevState.messages];
-        copy.find(item => item.id === itemId).read = false;
-        return { messages: copy };
+      this.props.store.dispatch({
+        type: 'UPDATE_MESSAGE',
+        id: itemId,
+        message: updatedMessage
       });
     });
   };
 
   //*TOOLBAR_COMPONENT: onApplyLabelSelectedMessages*//
   onApplyLabelSelectedMessages = label => {
-    let results = [];
-    this.state.selectedMessageIds.forEach(id => {
-      results.push(
-        this.state.messages.find(messageResults => {
-          return messageResults.id === id;
-        })
-      );
-    });
+    this.state.selectedMessageIds.forEach(id =>
+      this.onApplyLabelMessage(label, id)
+    );
+  };
 
-    results.forEach(message => {
-      const newObj = message.labels.concat(label);
-      const message_id = message.id;
-
-      updateMessage(message_id, {
-        labels: newObj.toString()
-      }).then(updatedMessage => {
-        this.setState(currentState => {
-          let copy = [...currentState.messages];
-          copy = copy.map(
-            element => (element.id === message_id ? updatedMessage : element)
-          );
-          return { messages: copy };
-        });
+  onApplyLabelMessage = (label, itemId) => {
+    let newMessage = this.state.messages.find(message => message.id === itemId);
+    newMessage.labels
+      ? newMessage.labels.push(label)
+      : (newMessage.labels = [label]);
+    updateMessage(itemId, {
+      labels: newMessage.labels.join(',')
+    }).then(message => {
+      this.props.store.dispatch({
+        type: 'UPDATE_MESSAGE',
+        id: itemId,
+        message: message
       });
     });
   };
 
-  //*TOOLBAR_COMPONENT: onRemoveLabelSelectedMessages*//
+  //*TOOLBAR_COMPONENT: onRemoveLabelMessage*//
+  onRemoveLabelMessage = (label, itemId) => {
+    let newMessage = this.state.messages.find(message => message.id === itemId);
+    if (newMessage.labels.includes(label)) {
+      newMessage.labels.splice(newMessage.labels.indexOf(label), 1);
+    }
+    updateMessage(itemId, {
+      labels: newMessage.labels.join(',')
+    }).then(message => {
+      this.props.store.dispatch({
+        type: 'UPDATE_MESSAGE',
+        id: itemId,
+        message: message
+      });
+    });
+  };
+
   onRemoveLabelSelectedMessages = label => {
-    let result = [];
-    this.state.selectedMessageIds.forEach(id => {
-      result.push(
-        this.state.messages.find(messages => {
-          return messages.id === id;
-        })
-      );
-
-      let item_labels = result[0].labels;
-      let item_id = result[0].id;
-
-      if (item_id && item_labels.includes(label)) {
-        let label_index = item_labels.indexOf(label);
-        item_labels.splice(label_index, 1);
-      }
-
-      updateMessage(item_id, {
-        labels: item_labels.toString()
-      }).then(updatedMessage => {
-        this.setState(currentState => {
-          let copy = [...currentState.messages];
-          copy = copy.map(
-            element => (element.id === item_id ? updatedMessage : element)
-          );
-          return { messages: copy };
-        });
-      });
-    });
+    this.state.selectedMessageIds.forEach(id =>
+      this.onRemoveLabelMessage(label, id)
+    );
   };
-
-  ///alternative onRemoveLabelSelectedMessages
-  // this.setState(currentState => {
-  //   const newMessages = currentState.messages.map(message => {
-  //     if (message.id === this.state.selectedMessageIds) {
-  //       return message.labels;
-  //     } else {
-  //       return message;
-  //     }
-  //     //if message.id is in this.state.selectedMessageIds,
-  //     //then return a new message which is the same as message,
-  //     //just with label removed
-  //     //else return message
-  //   });
-  //   return { messages: newMessages };
-  // });
 
   //*TOOLBAR_COMPONENT: onMarkAsReadSelectedMessages*//
   onMarkAsReadSelectedMessages = () => {
@@ -177,78 +146,48 @@ export default class App extends Component {
 
   //*TOOLBAR_COMPONENT: onSelectAllMessages*//
   onSelectAllMessages = () => {
-    this.setState(prevState => {
-      let newArr = prevState.messages.map(message => message.id);
-      return {
-        selectedMessageIds: newArr,
-        selectedMessageCount: newArr.length
-      };
+    this.state.messages.forEach(getmessage => {
+      if (!this.state.selectedMessageIds.includes(getmessage.id)) {
+        this.props.store.dispatch({
+          type: 'SELECT_MESSAGE',
+          id: getmessage.id
+        });
+      }
     });
   };
 
   //*TOOLBAR_COMPONENT: onDeselectAllMessages*//
   onDeselectAllMessages = () => {
-    this.setState({
-      selectedMessageIds: [],
-      selectedMessageCount: 0
-    });
+    this.state.messages.forEach(getmessage =>
+      this.props.store.dispatch({ type: 'DESELECT_MESSAGE', id: getmessage.id })
+    );
   };
 
   //*COMPOSE_FORM: onOpenComposeForm*//
   onOpenComposeForm = () => {
-    this.setState(currentState => {
-      let copy = [...currentState.showComposeForm];
-      copy = true;
-      return { showComposeForm: copy };
-    });
+    this.props.store.dispatch({ type: 'FORM_SHOW' });
   };
 
   //*COMPOSE_FORM: onComposeFormCancel*//
   onComposeFormCancel = () => {
-    this.setState(currentState => {
-      let copy = [...currentState.showComposeForm];
-      copy = false;
-      return { showComposeForm: copy };
+    this.props.store.dispatch({ type: 'FORM_CANCEL' });
+  };
+
+  //*ComposeForm: onComposeFormSubmit*//
+  onComposeFormSubmit = (subject, body) => {
+    createMessage(subject, body).then(message => {
+      this.props.store.dispatch({ type: 'CREATE_MESSAGE', message: message });
     });
   };
 
   //*TOOLBAR_COMPONENT: onDeleteSelectedMessages*//
   onDeleteSelectedMessages = () => {
-    this.state.selectedMessageIds.forEach(message => {
-      let itemId = message;
-
-      deleteMessage(itemId).then(data => {
-        this.setState(prevState => {
-          prevState.messages.forEach((message, index) => {
-            if (message.id === data.id) {
-              prevState.messages.splice(index, 1);
-            }
-            return message;
-          });
-        });
-      });
-    });
+    this.state.selectedMessageIds.forEach(id => this.onDeleteMessage(id));
   };
 
-  //*ComposeForm: onComposeFormSubmit*//
-  onComposeFormSubmit = ({ subject, body }) => {
-    let newMessage = {
-      subject: subject,
-      body: body,
-      read: false,
-      starred: false,
-      labels: ''
-    };
-
-    return createMessage(newMessage).then(updatedMessage => {
-      this.setState(currentState => {
-        let newMessages = [...currentState.messages];
-        newMessages.unshift(updatedMessage);
-        return {
-          messages: newMessages,
-          showComposeForm: false
-        };
-      });
+  onDeleteMessage = itemId => {
+    deleteMessage(itemId).then(() => {
+      this.props.store.dispatch({ type: 'DELETE_MESSAGE', id: itemId });
     });
   };
 
@@ -256,23 +195,23 @@ export default class App extends Component {
     return (
       <InboxPage
         messages={this.state.messages} //done
-        selectedMessageIds={this.state.selectedMessageIds}
-        selectedMessageCount={this.state.selectedMessageCount}
+        selectedMessageIds={this.state.selectedMessageIds} //done
+        selectedMessageCount={this.state.selectedMessageCount} //done
         onToggleComposeForm={this.toggleComposeForm} //
-        onSelectAllMessages={this.onSelectAllMessages} //
+        onSelectAllMessages={this.onSelectAllMessages} //done
         onDeselectAllMessages={this.onDeselectAllMessages}
         onMarkAsReadSelectedMessages={this.onMarkAsReadSelectedMessages} //done
         onMarkAsUnreadSelectedMessages={this.onMarkAsUnreadSelectedMessages} //done
         onApplyLabelSelectedMessages={this.onApplyLabelSelectedMessages} //done
         onRemoveLabelSelectedMessages={this.onRemoveLabelSelectedMessages} //done
-        onDeleteSelectedMessages={this.onDeleteSelectedMessages} //
-        onMarkAsReadMessage={this.onMarkAsReadMessage} //done
+        onDeleteSelectedMessages={this.onDeleteSelectedMessages} //done
+        onMarkAsReadMessage={this.onMarkAsReadMessage}
         onSelectMessage={this.onSelectMessage} //done
         onDeselectMessage={this.onDeselectMessage} //done
         onStarMessage={this.onStarMessage} //done
         onUnstarMessage={this.onUnstarMessage} //done
         onOpenComposeForm={this.onOpenComposeForm} //done
-        onComposeFormSubmit={this.onComposeFormSubmit}
+        onComposeFormSubmit={this.onComposeFormSubmit} //done
         onComposeFormCancel={this.onComposeFormCancel} //done
         showComposeForm={this.state.showComposeForm} //done
       />

@@ -13,7 +13,6 @@ export default function ToolbarComponent({
   onRemoveLabelSelectedMessages,
   onDeleteSelectedMessages
 }) {
-  //let classes;
   let status = 'fa fa-square-o';
 
   if (selectedMessageCount === messages.length) {
@@ -22,23 +21,11 @@ export default function ToolbarComponent({
     status = 'fa fa-minus-square-o'; // some
   }
 
-  // let disabled = '';
-  //
-  // if (selectedMessageCount === 0) {
-  //   disabled = 'disabled';
-  // }
-
   //onOpenComposeForm
   function handle_onOpenComposeForm(event) {
     event.preventDefault();
     onOpenComposeForm();
   }
-
-  //SELECT ALL MESSAGE BUTTON
-  // function handle_onSelectAllMessages(event) {
-  //   event.preventDefault();
-  //   onSelectAllMessages();
-  // }
 
   function handle_onSelectAllMessages(event) {
     if (selectedMessageCount === 0) {
@@ -47,12 +34,6 @@ export default function ToolbarComponent({
       onDeselectAllMessages();
     }
   }
-
-  //UNSELECT ALL MESSAGE BUTTON
-  // function handle_onDeselectAllMessages(event) {
-  //   event.preventDefault();
-  //   onDeselectAllMessages();
-  // }
 
   //MARK AS READ BUTTON
   function handle_onMarkAsReadSelectedMessages(event) {
@@ -79,8 +60,8 @@ export default function ToolbarComponent({
   }
 
   //DELETE MESSAGES
-  function handle_onDeleteSelectedMessages(event) {
-    event.preventDefault();
+  function handle_onDeleteSelectedMessages() {
+    console.log('toolbar');
     onDeleteSelectedMessages();
   }
 

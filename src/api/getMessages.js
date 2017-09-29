@@ -1,7 +1,7 @@
 export default function getMenuItems() {
-  return fetch('https://api.airtable.com/v0/app9W2SSELvaPePpI/messages', {
+  return fetch(`https://api.airtable.com/v0/app9W2SSELvaPePpI/messages/`, {
     headers: {
-      Authorization: 'Bearer keyrIMJRMlgyfWv0r'
+      Authorization: `Bearer keyrIMJRMlgyfWv0r`
     }
   })
     .then(response => response.json())

@@ -14,6 +14,7 @@ export default function MessagesComponent({
     <div>
       {messages.map(element => {
         // console.log(selectedMessageIds.indexOf(element.id) > -1 ? true : false);
+        console.log('messages', element);
         return (
           <MessageComponent
             key={element.id}
