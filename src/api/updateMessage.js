@@ -14,7 +14,6 @@ export default function updateMessage(itemId, change) {
   )
     .then(response => response.json())
     .then(record => {
-      console.log('record', record);
       return {
         id: record.id,
         body: record.fields.body,

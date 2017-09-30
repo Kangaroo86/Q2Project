@@ -3,6 +3,7 @@ import React from 'react';
 export default function ToolbarComponent({
   messages,
   selectedMessageCount,
+  selectedMessageIds,
   onOpenComposeForm,
   onSelectAllMessages,
   onDeselectAllMessages,
@@ -14,6 +15,9 @@ export default function ToolbarComponent({
 }) {
   let status = 'fa fa-square-o';
 
+  if (messages === null) {
+    return null;
+  }
   if (selectedMessageCount === messages.length) {
     status = 'fa fa-check-square-o'; //all
   } else if (selectedMessageCount !== 0) {
@@ -37,31 +41,38 @@ export default function ToolbarComponent({
   //MARK AS READ BUTTON
   function handle_onMarkAsReadSelectedMessages(event) {
     event.preventDefault();
-    onMarkAsReadSelectedMessages();
+    onMarkAsReadSelectedMessages(selectedMessageIds);
   }
 
   //MARK AS UNREAD BUTTON
   function handle_onMarkAsUnreadSelectedMessages(event) {
     event.preventDefault();
-    onMarkAsUnreadSelectedMessages();
+    onMarkAsUnreadSelectedMessages(selectedMessageIds);
   }
 
   //APPLY LABELS
   function handle_onApplyLabelSelectedMessages(event) {
     event.preventDefault();
-    onApplyLabelSelectedMessages(event.target.value);
+    onApplyLabelSelectedMessages(
+      event.target.value,
+      selectedMessageIds,
+      messages
+    );
   }
 
   //REMOVE LABELS
   function handle_onRemoveLabelSelectedMessages(event) {
     event.preventDefault();
-    onRemoveLabelSelectedMessages(event.target.value);
+    onRemoveLabelSelectedMessages(
+      event.target.value,
+      selectedMessageIds,
+      messages
+    );
   }
 
   //DELETE MESSAGES
-  function handle_onDeleteSelectedMessages(event) {
-    event.preventDefault();
-    onDeleteSelectedMessages();
+  function handle_onDeleteSelectedMessages() {
+    onDeleteSelectedMessages(selectedMessageIds);
   }
 
   return (

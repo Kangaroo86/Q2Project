@@ -77,7 +77,7 @@ export default function rootReducer(
       const remainingMessages = currentState.messages.slice();
       return {
         ...currentState,
-        messages: remainingMessages.filter(message => message.id !== action.id),
+        messages: remainingMessages,
         selectedMessageIds: [],
         selectedMessageCount: currentState.messages.filter(
           message => message.read !== true
