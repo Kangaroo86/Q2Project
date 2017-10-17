@@ -15,7 +15,7 @@ export default class MessageComponent extends Component {
 
   //CHECK MESSAGES CLICK
   handleCheckClick(event) {
-    //console.log('props---', this.props);
+    console.log('props---', this.props);
     if (this.props.selected) {
       this.props.onDeselectMessage(this.props.message.id);
     } else {

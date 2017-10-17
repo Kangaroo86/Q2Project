@@ -1,4 +1,4 @@
-export default function getMenuItems() {
+export default function getMessages() {
   return fetch(`https://api.airtable.com/v0/app9W2SSELvaPePpI/messages/`, {
     headers: {
       Authorization: `Bearer keyrIMJRMlgyfWv0r`

@@ -1,8 +1,7 @@
 import React from 'react';
 
 export default function InboxPageLayout(props) {
-  //console.log('what is props', props);
-
+  console.log('what is props', props);
   return (
     <div className="container">
       <div className="row">
